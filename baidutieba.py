@@ -42,10 +42,10 @@ def same(page1,page2):
 def getcontent(url):
     html = urllib.request.urlopen(url)
     html = html.read().decode('utf-8','ignore')
-    title = re.findall(r'title: ".*?"',html)
+    title = re.findall(r'title:".*?"|title: ".*?"',html)
     title = re.findall(r'".*"',title[0])
     bsobj = BeautifulSoup(html,"html.parser")
-    content = bsobj.find("div",{"class":"d_post_content j_d_post_content "})
+    content = bsobj.find("div",{"class":re.compile("(d_post_content j_d_post_content )|(d_post_content j_d_post_content  clearfix)")})
     print("《",title[0][1:-1],"》")
     print(content.get_text()[8:-1])
 
@@ -71,18 +71,22 @@ def allpagelink(keyword,yourwantnumber):#获取所有页面的所有的帖子连
     return linklist
 
 def main():
-    keyword = "尾翼划过的天空"
-    wantnumber = 1.0
-    keyword = input("请输入一个正确的贴吧名称：")
     try:
-        wantnumber = input("你想获取几页内容（1~10000）？")
+        wantnumber = 1.0
+        print("""#贴吧爬虫v1.0#
+##输入正确的贴吧名称和爬取页数即可爬取每个帖子的标题和一楼内容##
+##爬取过程中按Ctrl+C可结束程序##\n""")
+        keyword = input("->请输入一个正确的贴吧名称：")
+    
+        wantnumber = input("->你想获取几页内容（1~10000）？")
         wantnumber = int(float(wantnumber))
         linkset = allpagelink(keyword,wantnumber)
         for link in linkset:
             getcontent(link)
-    except:
+    except ValueError as reason:
         print("输入页数非法！程序结束。")
-        
+    except KeyboardInterrupt as reason:
+        print("程序结束！")
 
 
 if __name__=="__main__":
