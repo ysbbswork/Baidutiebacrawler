@@ -16,7 +16,6 @@ def getlinklist(inputlink): #这个函数是获取一个页面上所有帖子的
     titlelist = bsobj.findAll("a",{"class":"j_th_tit "})
     for title in titlelist:
         pages.append("http://tieba.baidu.com"+title.attrs["href"])
-    
     return pages
 
 def same(page1,page2):
@@ -42,7 +41,7 @@ def same(page1,page2):
 
 def getcontent(url):
     html = urllib.request.urlopen(url)
-    html = html.read().decode('utf-8')
+    html = html.read().decode('utf-8','ignore')
     title = re.findall(r'title: ".*?"',html)
     title = re.findall(r'".*"',title[0])
     bsobj = BeautifulSoup(html,"html.parser")
@@ -60,7 +59,7 @@ def allpagelink(keyword,yourwantnumber):#获取所有页面的所有的帖子连
     stop = 0
     while stop == 0:
         thispageurl=url+"&pn="+str(pagenumber)
-        linklist2 = linklist.extend(getlinklist(thispageurl))
+        linklist.extend(getlinklist(thispageurl))
         pagenumber += 50
         wantnumber -= 50
         if same(thispageurl,endpageurl) == 1:
@@ -73,14 +72,18 @@ def allpagelink(keyword,yourwantnumber):#获取所有页面的所有的帖子连
 
 def main():
     keyword = "尾翼划过的天空"
-    wantnumber = 1
+    wantnumber = 1.0
     keyword = input("请输入一个正确的贴吧名称：")
-    wantnumber = input("你想获取几页内容（1~10000）？")
-    wantnumber = int(wantnumber)
-    linkset = allpagelink(keyword,wantnumber)
-    for link in linkset:
-        getcontent(link)
-    input()
+    try:
+        wantnumber = input("你想获取几页内容（1~10000）？")
+        wantnumber = int(float(wantnumber))
+        linkset = allpagelink(keyword,wantnumber)
+        for link in linkset:
+            getcontent(link)
+    except:
+        print("输入页数非法！程序结束。")
+        
+
 
 if __name__=="__main__":
     main()
