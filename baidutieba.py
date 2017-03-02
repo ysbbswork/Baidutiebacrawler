@@ -40,14 +40,17 @@ def same(page1,page2):
     return same
 
 def getcontent(url):
-    html = urllib.request.urlopen(url)
-    html = html.read().decode('utf-8','ignore')
-    title = re.findall(r'title:".*?"|title: ".*?"',html)
-    title = re.findall(r'".*"',title[0])
-    bsobj = BeautifulSoup(html,"html.parser")
-    content = bsobj.find("div",{"class":re.compile("(d_post_content j_d_post_content )|(d_post_content j_d_post_content  clearfix)")})
-    print("《",title[0][1:-1],"》")
-    print(content.get_text()[8:-1])
+    try:
+        html = urllib.request.urlopen(url)
+        html = html.read().decode('utf-8','ignore')
+        title = re.findall(r'title:".*?"|title: ".*?"',html)
+        title = re.findall(r'".*"',title[0])
+        bsobj = BeautifulSoup(html,"html.parser")
+        content = bsobj.find("div",{"class":re.compile("(d_post_content j_d_post_content )|(d_post_content j_d_post_content  clearfix)")})
+        print("《",title[0][1:-1],"》")
+        print(content.get_text()[8:-1])
+    except UnicodeEncodeError as reason:
+        print("遇到非法内容，可能含有未能识别编码！程序结束！")
 
 def allpagelink(keyword,yourwantnumber):#获取所有页面的所有的帖子连接
     number = int(yourwantnumber)
